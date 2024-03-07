@@ -1,29 +1,22 @@
 import { Alert, FlatList, Text, TextInput, TouchableOpacity, View } from "react-native"
 
 import { styles } from "./styles"
-import { useCallback } from "react"
+import { useCallback, useState } from "react"
 import { ParticipantComponent } from "../../components/Participant"
 
 export const HomeScreen = () => {
-  const participants = [
-    'Lubni Morais', 
-    'Rodrigo Gonçalves', 
-    'Diego Fernandes', 
-    'Vini',
-    'Jack',
-    'Ana',
-    'Filipe',
-    'Isabella',
-    'Mayk',
-    'Biro'
-  ]
+  const [participants, setParticipants] = useState<string[]>([]);
+  const [participantName, setParticipantName] = useState('')
+  
 
   const handleParticipantAdd = useCallback(() => {
-    if (participants.includes('Lubni Morais')) {
+    if (participants.includes(participantName)) {
       return Alert.alert('Participante existe', 'Já existe um participante na lista com esse nome')
     }
-    console.log('botão adicionar');
-  }, [])
+
+    setParticipants(oldState => [...oldState, participantName])
+    setParticipantName('')
+  }, [participantName])
 
   const handleParticipantRemove = useCallback((name: string) => {
     Alert.alert(
@@ -34,7 +27,11 @@ export const HomeScreen = () => {
           text: 'Sim',
           style: 'destructive',
           onPress: () => {
-            console.log(`Remover: ${name}`)
+            setParticipants(oldState => {
+              const participantRemoved = oldState.filter(participant => participant !== name)
+              
+              return participantRemoved
+            })
           }
         },
         {
@@ -59,6 +56,10 @@ export const HomeScreen = () => {
           style={styles.input}
           placeholder="Nome do participante"
           placeholderTextColor="#6B6B6B"
+          value={participantName}
+          onChangeText={text => {
+            setParticipantName(text)
+          }}
         />
 
         <TouchableOpacity style={styles.button}
